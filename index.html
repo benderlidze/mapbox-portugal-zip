@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Create a hover effect</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1Ijoic2VyZ2JlciIsImEiOiJja3dwOWgzeGQwYWdyMm9xb2pkMDFvYmNuIn0.H9AJ_NLmDNYMed6dvu_Q0A';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: { lng: -8.134554131071468, lat: 37.23774899843812 },
+            zoom: 8
+        });
+        let hoveredStateId = null;
+
+        map.on('load', () => {
+
+            d3
+                .csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTgM8SfhGa20qi8TqJZRuCtm9tLITwW4AUkVRxN215mJlZB4Czf93YJFDVb8PsA4hfY-pl3SVBFGcU3/pub?output=csv")
+                .then(data => {
+                    const prices = data.map(d => +d[`Average price (€/sqm)`]).filter(d => d > 0)
+                    console.log('prices', prices);
+                    const max = Math.max(...prices)
+                    const min = Math.min(...prices)
+
+                    const colors = d3.scaleQuantize()
+                        .domain([min, max])
+                        .range(['#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026', '#520018']);
+
+                    fetch("data.geojson")
+                        .then(d => d.json())
+                        .then(json => {
+                            console.log('json', json);
+                            json.features.forEach((el, key) => {
+                                el.id = key
+                                const price = data.find(zip => zip['ZIP CODE'] === el.properties.wpc_id)
+                                console.log('price', price);
+                                if (price) {
+                                    el.properties.color = colors(price[`Average price (€/sqm)`])
+                                } else {
+                                    el.properties.color = "#fff"
+                                }
+                            });
+
+                            console.log('json', json);
+                            map.getSource("zip").setData(json)
+                        })
+                })
+
+
+            map.addSource('zip', {
+                'type': 'geojson',
+                'data': {
+                    "type": "FeatureCollection",
+                    "features": []
+                }
+            });
+
+            // The feature-state dependent fill-opacity expression will render the hover effect
+            // when a feature's hover state is set to true.
+            map.addLayer({
+                'id': 'zip-fills',
+                'type': 'fill',
+                'source': 'zip',
+                'layout': {},
+                'paint': {
+                    'fill-color': ['get', 'color'],
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        1,
+                        0.9
+                    ]
+                }
+            });
+
+            map.addLayer({
+                'id': 'zip-borders',
+                'type': 'line',
+                'source': 'zip',
+                'layout': {},
+                'paint': {
+                    'line-color': 'white',
+                    'line-width': 1
+                }
+            });
+
+            // When the user moves their mouse over the state-fill layer, we'll update the
+            // feature state for the feature under the mouse.
+            map.on('mousemove', 'zip-fills', (e) => {
+                if (e.features.length > 0) {
+                    if (hoveredStateId !== null) {
+                        map.setFeatureState(
+                            { source: 'zip', id: hoveredStateId },
+                            { hover: false }
+                        );
+                    }
+                    hoveredStateId = e.features[0].id;
+                    map.setFeatureState(
+                        { source: 'zip', id: hoveredStateId },
+                        { hover: true }
+                    );
+                }
+            });
+
+            // When the mouse leaves the state-fill layer, update the feature state of the
+            // previously hovered feature.
+            map.on('mouseleave', 'zip-fills', () => {
+                if (hoveredStateId !== null) {
+                    map.setFeatureState(
+                        { source: 'zip', id: hoveredStateId },
+                        { hover: false }
+                    );
+                }
+                hoveredStateId = null;
+            });
+        });
+    </script>
+
+
+
+
+
+</body>
+
+</html>
