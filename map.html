@@ -63,7 +63,7 @@
 <body>
 
     <div id="logo">
-        <img src="img/thumb_Sardo - Master Logo.png">
+        <!-- <img src="img/thumb_Sardo - Master Logo.png"> -->
     </div>
     <div id="legend"></div>
 
@@ -168,7 +168,7 @@
         function generateLegendAndColors(data) {
 
 
-            const colorArray = ["#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", "#E6B333", "#3366E6", "#999966", "#809980", "#E6FF80", "#1AFF33", "#999933", "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#FF4D4D", "#99E6E6", "#6666FF"];
+            const colorArray = ["#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", "#E6B333", "#3366E6", "#999966", "#809980", "#E6FF80", "#1AFF33", "#999933", "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#FF4D4D", "#99E6E6", "#6666FF", "red", "orange", "green", "blue"];
             const names = [...new Set(data.features.map(d => d.properties.name))]
             const legend = new Map();
 
