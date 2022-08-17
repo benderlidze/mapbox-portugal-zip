@@ -13,6 +13,7 @@
         body {
             margin: 0;
             padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         #map {
@@ -21,17 +22,61 @@
             bottom: 0;
             width: 100%;
         }
+
+        #logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+
+        #legend {
+            position: absolute;
+            bottom: 20px;
+            width: calc(100% - 40px);
+            background-color: rgb(255 255 255 / 90%);
+            z-index: 1000;
+            padding: 10px;
+            left: 20px;
+            height: 112px;
+            /* display: grid; */
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
+
+        .square {
+            width: 15px;
+            height: 15px;
+            margin-right: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            padding: 2px;
+        }
     </style>
 </head>
 
 <body>
+
+    <div id="logo">
+        <img src="img/thumb_Sardo - Master Logo.png">
+    </div>
+    <div id="legend"></div>
+
     <div id="map"></div>
     <script>
+
+        const legendDiv = document.getElementById("legend")
+
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2VyZ2JlciIsImEiOiJja3dwOWgzeGQwYWdyMm9xb2pkMDFvYmNuIn0.H9AJ_NLmDNYMed6dvu_Q0A';
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v11',
-            center: { lng: -8.024042128620067, lat: 37.03362082227727 },
+            center: { lng: -8.018900919976204, lat: 37.04304808297877 },
             zoom: 14
         });
         let hoveredStateId = null;
@@ -42,20 +87,13 @@
                 .then(d => d.json())
                 .then(json => {
                     console.log('json', json);
-                    json.features.forEach((el, key) => {
-                        el.id = key
-                        el.properties.color = "red"
-                        // const price = data.find(zip => zip['ZIP CODE'] === el.properties.wpc_id)
-                        // console.log('price', price);
-                        // if (price) {
-                        //     el.properties.color = colors(price[`Average price (€/sqm)`])
-                        // } else {
-                        //     el.properties.color = "#fff"
-                        // }
-                    });
 
-                    console.log('json', json);
-                    map.getSource("zip").setData(json)
+                    const geojson = generateLegendAndColors(json)
+
+                    console.log('json', geojson);
+                    map.getSource("zip").setData(geojson)
+
+
                 })
 
             map.addSource('zip', {
@@ -125,6 +163,41 @@
                 hoveredStateId = null;
             });
         });
+
+
+        function generateLegendAndColors(data) {
+
+
+            const colorArray = ["#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", "#E6B333", "#3366E6", "#999966", "#809980", "#E6FF80", "#1AFF33", "#999933", "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#FF4D4D", "#99E6E6", "#6666FF"];
+            const names = [...new Set(data.features.map(d => d.properties.name))]
+            const legend = new Map();
+
+            console.log('name', names);
+
+            data.features.forEach((el, key) => {
+                el.id = key
+
+                const name = el.properties.name
+                const color = colorArray[names.indexOf(name)]
+
+                el.properties.color = color
+                legend.set(el.properties.name, { color, name })
+            });
+
+            console.log('legend', legend);
+
+            legend.forEach(s => {
+                legendDiv.innerHTML += `
+                    <div class="legend-item">
+                        <div class="square" style="background-color:${s.color}"></div>
+                        <div class="name" >${s.name}</div>
+                    </div>
+                `
+            })
+
+
+            return data
+        }
     </script>
 
 
