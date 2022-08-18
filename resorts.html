@@ -61,27 +61,59 @@
 </head>
 
 <body>
-
     <div id="logo">
         <!-- <img src="img/thumb_Sardo - Master Logo.png"> -->
     </div>
     <div id="legend"></div>
-
     <div id="map"></div>
     <script>
 
         const legendDiv = document.getElementById("legend")
+        const zoomLevel = 13
 
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2VyZ2JlciIsImEiOiJja3dwOWgzeGQwYWdyMm9xb2pkMDFvYmNuIn0.H9AJ_NLmDNYMed6dvu_Q0A';
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v11',
-            center: { lng: -8.018900919976204, lat: 37.04304808297877 },
-            zoom: 14
+            center: { lng: -8.134554131071468, lat: 37.23774899843812 },
+            zoom: 8
         });
         let hoveredStateId = null;
 
         map.on('load', () => {
+
+            d3
+                .csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTgM8SfhGa20qi8TqJZRuCtm9tLITwW4AUkVRxN215mJlZB4Czf93YJFDVb8PsA4hfY-pl3SVBFGcU3/pub?output=csv")
+                .then(data => {
+                    const prices = data.map(d => +d[`Average price (€/sqm)`]).filter(d => d > 0)
+                    console.log('prices', prices);
+                    const max = Math.max(...prices)
+                    const min = Math.min(...prices)
+
+                    const colors = d3.scaleQuantize()
+                        .domain([min, max])
+                        .range(['#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026', '#520018']);
+
+                    fetch("data.geojson")
+                        .then(d => d.json())
+                        .then(json => {
+                            console.log('json', json);
+                            json.features.forEach((el, key) => {
+                                el.id = key
+                                const price = data.find(zip => zip['ZIP CODE'] === el.properties.wpc_id)
+                                console.log('price', price);
+                                if (price) {
+                                    el.properties.color = colors(price[`Average price (€/sqm)`])
+                                } else {
+                                    el.properties.color = "#fff"
+                                }
+                            });
+
+                            console.log('json', json);
+                            map.getSource("zip").setData(json)
+                        })
+                })
+
 
             fetch("main.geojson")
                 .then(d => d.json())
@@ -98,10 +130,10 @@
                 }
             });
 
-
             map.addLayer({
                 'id': 'resorts-fills',
                 'type': 'fill',
+                'minzoom': zoomLevel,
                 'source': 'resorts',
                 'layout': {},
                 'paint': {
@@ -118,7 +150,47 @@
             map.addLayer({
                 'id': 'resorts-borders',
                 'type': 'line',
+                'minzoom': zoomLevel,
                 'source': 'resorts',
+                'layout': {},
+                'paint': {
+                    'line-color': "white",
+                    'line-width': 1
+                }
+            });
+
+            map.addSource('zip', {
+                'type': 'geojson',
+                'data': {
+                    "type": "FeatureCollection",
+                    "features": []
+                }
+            });
+
+            // The feature-state dependent fill-opacity expression will render the hover effect
+            // when a feature's hover state is set to true.
+            map.addLayer({
+                'id': 'zip-fills',
+                'maxzoom': zoomLevel,
+                'type': 'fill',
+                'source': 'zip',
+                'layout': {},
+                'paint': {
+                    'fill-color': ['get', 'color'],
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        1,
+                        0.9
+                    ],
+                }
+            });
+
+            map.addLayer({
+                'id': 'zip-borders',
+                'maxzoom': zoomLevel,
+                'type': 'line',
+                'source': 'zip',
                 'layout': {},
                 'paint': {
                     'line-color': "white",
@@ -141,30 +213,45 @@
                 map.getCanvas().style.cursor = '';
                 popup.remove();
             });
+
+            map.on('mousemove', 'zip-fills', (e) => {
+                if (e.features.length > 0) {
+                    if (hoveredStateId !== null) {
+                        map.setFeatureState(
+                            { source: 'zip', id: hoveredStateId },
+                            { hover: false }
+                        );
+                    }
+                    hoveredStateId = e.features[0].id;
+                    map.setFeatureState(
+                        { source: 'zip', id: hoveredStateId },
+                        { hover: true }
+                    );
+                }
+            });
+
+            map.on('mouseleave', 'zip-fills', () => {
+                if (hoveredStateId !== null) {
+                    map.setFeatureState(
+                        { source: 'zip', id: hoveredStateId },
+                        { hover: false }
+                    );
+                }
+                hoveredStateId = null;
+            });
         });
 
-
         function generateLegendAndColors(data) {
-
-
             const colorArray = ["#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", "#E6B333", "#3366E6", "#999966", "#809980", "#E6FF80", "#1AFF33", "#999933", "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#FF4D4D", "#99E6E6", "#6666FF", "red", "orange", "green", "blue"];
             const names = [...new Set(data.features.map(d => d.properties.name))]
             const legend = new Map();
-
-            console.log('name', names);
-
             data.features.forEach((el, key) => {
                 el.id = key
-
                 const name = el.properties.name
                 const color = colorArray[names.indexOf(name)]
-
                 el.properties.color = color
                 legend.set(el.properties.name, { color, name })
             });
-
-            console.log('legend', legend);
-
             legend.forEach(s => {
                 legendDiv.innerHTML += `
                     <div class="legend-item">
@@ -173,8 +260,6 @@
                     </div>
                 `
             })
-
-
             return data
         }
     </script>
