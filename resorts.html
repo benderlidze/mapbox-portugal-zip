@@ -8,6 +8,7 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
     <style>
         body {
@@ -56,11 +57,13 @@
             width: 15px;
             height: 15px;
             margin-right: 10px;
+
         }
 
         .legend-item {
             display: flex;
             padding: 2px;
+            cursor: pointer;
         }
 
         .mapboxgl-ctrl-logo {
@@ -79,6 +82,7 @@
 
         const legendDiv = document.getElementById("legend")
         const zoomLevel = 13
+        const allResorts = []
 
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2VyZ2JlciIsImEiOiJja3dwOWgzeGQwYWdyMm9xb2pkMDFvYmNuIn0.H9AJ_NLmDNYMed6dvu_Q0A';
         const map = new mapboxgl.Map({
@@ -129,6 +133,7 @@
                 .then(json => {
                     const geojson = generateLegendAndColors(json)
                     map.getSource("resorts").setData(geojson)
+                    allResorts.push(...geojson.features)
                 })
 
             map.addSource('resorts', {
@@ -207,6 +212,40 @@
                 }
             });
 
+
+            map.addSource('maine', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Polygon',
+                        'coordinates': [[[-8.026542663574219, 37.0606909679239], [-8.030233383178711, 37.059012878653185], [-8.032379150390625, 37.05582783163828], [-8.032679557800291, 37.05103288508707], [-8.032636642456053, 37.04610062399102], [-8.032121658325195, 37.04116804238687], [-8.029890060424805, 37.03664622770574], [-8.026456832885742, 37.0310963598222], [-8.02195072174072, 37.02814996885581], [-8.018002510070799, 37.02506641405478], [-8.013839721679688, 37.02403853463819], [-8.008604049682617, 37.024312637175825], [-8.005213737487793, 37.025032151631635], [-8.004312515258789, 37.02862962168568], [-8.004484176635742, 37.030205602514464], [-8.00727367401123, 37.03311765496106], [-8.008089065551758, 37.03572127789156], [-8.007574081420898, 37.0370230558814], [-8.0055570602417, 37.03938675359938], [-8.005170822143555, 37.041921651985184], [-8.004441261291504, 37.04353161106517], [-8.003754615783691, 37.04568958776542], [-8.003497123718262, 37.04932033075272], [-8.004183769226074, 37.052368650641654], [-8.004398345947264, 37.05384139053989], [-8.008475303649902, 37.054320881083285], [-8.014483451843262, 37.05589632867974], [-8.015470504760742, 37.05699227293337], [-8.017144203186035, 37.059047125744], [-8.022422790527344, 37.060314257236854], [-8.025341033935547, 37.06065672157509], [-8.026542663574219, 37.0606909679239]]]
+                    }
+                }
+            });
+            // map.addLayer({
+            //     'id': 'maine',
+            //     'type': 'fill',
+            //     'source': 'maine', // reference the data source
+            //     'layout': {},
+            //     'paint': {
+            //         'fill-color': '#0080ff', // blue color fill
+            //         'fill-opacity': 0.5
+            //     }
+            // });
+            map.addLayer({
+                'id': 'outline',
+                'type': 'line',
+                'minzoom': zoomLevel,
+                'source': 'maine',
+                'layout': {},
+                'paint': {
+                    'line-color': '#000',
+                    'line-width': 2
+                }
+            });
+
+
             const popup = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false
@@ -251,12 +290,30 @@
 
             map.on("zoom", () => {
                 const zoom = map.getZoom()
-
                 legendDiv.style.display = zoom >= zoomLevel ? "flex" : "none"
             })
         });
 
+        document.addEventListener("click", e => {
+
+            console.log('e', e);
+            const layer = e.target.closest(".legend-item").id
+            if (legend && legend !== "") {
+                //map.setFilter('resorts-fills', ['==', ['get', 'name'], layer]);
+                const geojson = allResorts.filter(res => res.properties.name === layer)
+                const featureCollection = { type: 'FeatureCollection', features: geojson }
+                console.log('featureCollection', featureCollection);
+                map.getSource("resorts").setData(featureCollection)
+
+
+                const bbox = turf.bbox(featureCollection)
+                map.fitBounds(bbox, { padding: 100, zoom: 15 })
+            }
+
+        })
+
         function generateLegendAndColors(data) {
+
             const colorArray = ["#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", "#E6B333", "#3366E6", "#999966", "#809980", "#E6FF80", "#1AFF33", "#999933", "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#FF4D4D", "#99E6E6", "#6666FF", "red", "orange", "green", "blue"];
             const names = [...new Set(data.features.map(d => d.properties.name))]
             const legend = new Map();
@@ -269,13 +326,14 @@
             });
             legend.forEach(s => {
                 legendDiv.innerHTML += `
-                    <div class="legend-item">
+                    <div class="legend-item" id="${s.name}">
                         <div class="square" style="background-color:${s.color}"></div>
                         <div class="name" >${s.name}</div>
                     </div>
                 `
             })
             return data
+
         }
     </script>
 
