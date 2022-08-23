@@ -78,6 +78,23 @@
             border-radius: 50%;
             cursor: pointer;
         }
+
+        .price-legend-div {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            z-index: 1000;
+            padding: 10px;
+        }
+
+        #price-legend {
+            display: grid;
+            grid-auto-flow: column;
+            grid-gap: 3px;
+            grid-template-rows: repeat(5, auto);
+        }
+        
     </style>
 </head>
 
@@ -85,10 +102,15 @@
     <div id="logo">
         <img src="img/thumb_Sardo - Master Logo.png">
     </div>
+    <div class="price-legend-div">
+        <div>Price per m<sup>2</sup>:</div>
+        <div id="price-legend"></div>
+    </div>
     <div id="legend"></div>
     <div id="map"></div>
     <script>
 
+        const priceLegend = document.getElementById("price-legend")
         const legendDiv = document.getElementById("legend")
         const zoomLevel = 13
         const allResorts = []
@@ -102,19 +124,39 @@
         });
         let hoveredStateId = null;
 
+
+        function createPriceLegend(min, max, colors) {
+
+            if (typeof colors !== 'function') return;
+
+            const res = []
+            const step = 1000
+            const start = Math.floor((min / step)) * step
+            const stop = Math.ceil((max / step)) * step
+
+            for (let index = start; index <= stop; index += step) {
+                console.log('index', index);
+                res.push({ index, color: colors(index) })
+            }
+
+            return res
+        }
+
         map.on('load', () => {
 
             d3
                 .csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTgM8SfhGa20qi8TqJZRuCtm9tLITwW4AUkVRxN215mJlZB4Czf93YJFDVb8PsA4hfY-pl3SVBFGcU3/pub?output=csv")
                 .then(data => {
                     const prices = data.map(d => +d[`Average price (€/sqm)`]).filter(d => d > 0)
-                    console.log('prices', prices);
+
                     const max = Math.max(...prices)
                     const min = Math.min(...prices)
 
                     const colors = d3.scaleQuantize()
                         .domain([min, max])
                         .range(['#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026', '#520018']);
+
+                    console.log('min,max', min, max);
 
                     fetch("data-v1.geojson")
                         .then(d => d.json())
@@ -139,6 +181,15 @@
                                 regionLabels.push(center)
                             });
 
+                            const legend = createPriceLegend(min, max, colors)
+                            legend.forEach(item => {
+                                priceLegend.innerHTML += `
+                                    <div class="legend-item" >
+                                        <div class="square" style="background-color:${item.color}"></div>
+                                        <div class="name">${item.index}</div>
+                                    </div>
+                                    `
+                            })
 
                             map.getSource("zip").setData(json)
                             map.getSource("regionLabels").setData(turf.featureCollection(regionLabels))
@@ -333,7 +384,7 @@
                 .setPopup(
                     new mapboxgl.Popup({ offset: 25 }) // add popups
                         .setHTML(
-                            `<h3></h3>`
+                            `< h3 ></h3 > `
                         )
                 )
                 .addTo(map);
@@ -394,25 +445,32 @@
                 const zoom = map.getZoom()
                 legendDiv.style.display = zoom >= zoomLevel ? "flex" : "none"
             })
+
+            map.on("click", () => {
+                clearResortsSelection()
+            })
         });
 
         document.addEventListener("click", e => {
 
             console.log('e', e);
-            const layer = e.target.closest(".legend-item").id
-            if (legend && legend !== "") {
-                //map.setFilter('resorts-fills', ['==', ['get', 'name'], layer]);
+
+            const layer = e.target.closest(".legend-item")?.id
+            if (layer && layer !== "") {
                 const geojson = allResorts.filter(res => res.properties.name === layer)
                 const featureCollection = { type: 'FeatureCollection', features: geojson }
-                console.log('featureCollection', featureCollection);
                 map.getSource("resorts").setData(featureCollection)
-
 
                 const bbox = turf.bbox(featureCollection)
                 map.fitBounds(bbox, { padding: 100, zoom: 15 })
             }
-
         })
+
+
+        function clearResortsSelection() {
+            const featureCollection = { type: 'FeatureCollection', features: allResorts }
+            map.getSource("resorts").setData(featureCollection)
+        }
 
         function generateLegendAndColors(data) {
 
@@ -430,7 +488,7 @@
                 legendDiv.innerHTML += `
                     <div class="legend-item" id="${s.name}">
                         <div class="square" style="background-color:${s.color}"></div>
-                        <div class="name" >${s.name}</div>
+                        <div class="name">${s.name}</div>
                     </div>
                 `
             })
