@@ -204,6 +204,8 @@
                         })
                 })
 
+            const legend = generateLegendAndColors()
+
             Promise.all([
                 fetch("data/Quinta do Lago.geojson").then(res => res.json()),
                 fetch("data/Vale do Lobo.geojson").then(res => res.json())
@@ -215,21 +217,20 @@
                     }).flat()
 
                     const collection = turf.featureCollection(polygons)
+                    geojson = legend.getGeojson(collection)
+                    legend.filterData()
 
-                    console.log('collection', collection);
-
-                    const geojson = generateLegendAndColors(collection)
                     map.getSource("resorts").setData(geojson)
                     allResorts.push(...geojson.features)
                 })
 
+            /*
             fetch("data/resortLabels.geojson")
-                .then(d => d.json())
-                .then(json => {
-                    resortLabels.push(...generateResortLabels(json))
-                    // map.getSource("resorts").setData(geojson)
-                    // allResorts.push(...geojson.features)
-                })
+            .then(d => d.json())
+            .then(json => {
+                resortLabels.push(...generateResortLabels(json))
+            })
+            */
 
             map.addSource('resorts', {
                 'type': 'geojson',
@@ -410,7 +411,7 @@
                 .setPopup(
                     new mapboxgl.Popup({ offset: 25 }) // add popups
                         .setHTML(
-                            `<h3></h3>`
+                            `<h3>Sardo Luxury Real Estate</h3>`
                         )
                 )
                 .addTo(map);
@@ -481,6 +482,15 @@
                 const point = turf.point([lng, lat])
                 console.log(JSON.stringify(point));
             })
+
+            map.on("moveend", e => {
+                const names = map.queryRenderedFeatures({ layers: ['resorts-fills'] }).map(f => f.properties.name)
+                console.log('names', names);
+                const unique = [...new Set(names)]
+                console.log('unique', unique);
+
+                legend.filterData(unique)
+            })
         });
 
         document.addEventListener("click", e => {
@@ -516,29 +526,53 @@
 
         }
 
-        function generateLegendAndColors(data) {
+        function generateLegendAndColors() {
 
             const colorArray = ["#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", "#E6B333", "#3366E6", "#999966", "#809980", "#E6FF80", "#1AFF33", "#999933", "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#FF4D4D", "#99E6E6", "#6666FF", "red", "orange", "green", "blue"];
-            const names = [...new Set(data.features.map(d => d.properties.name))]
             const legend = new Map();
-            data.features.forEach((el, key) => {
-                el.id = key
-                const name = el.properties.name
-                const color = names.indexOf(name) >= colorArray.length ? colorArray[names.length - names.indexOf(name)] : colorArray[names.indexOf(name)]
-                el.properties.color = color
-                legend.set(el.properties.name, { color, name })
-            });
-            legend.forEach(s => {
-                if (s.name === "") return;
-                legendDiv.innerHTML += `
+
+            function getGeojson(data) {
+                const names = [...new Set(data.features.map(d => d.properties.name))]
+                data.features.forEach((el, key) => {
+                    el.id = key
+                    const name = el.properties.name
+                    const color = names.indexOf(name) >= colorArray.length ? colorArray[names.length - names.indexOf(name)] : colorArray[names.indexOf(name)]
+                    el.properties.color = color
+                    legend.set(el.properties.name, { color, name })
+                });
+                return data
+            }
+
+            // legend.forEach(s => {
+            //     if (s.name === "") return;
+            //     legendDiv.innerHTML += `
+            //         <div class="legend-item" id="${s.name}">
+            //             <div class="square" style="background-color:${s.color}"></div>
+            //             <div class="name">${s.name}</div>
+            //         </div>
+            //     `
+            // })
+
+            function filterData(filterArray = []) {
+                legendDiv.innerHTML = ``
+                legend.forEach(s => {
+                    if (s.name === "") return;
+                    if (filterArray.length > 0) {
+                        if (!filterArray.includes(s.name)) return;
+                    }
+                    legendDiv.innerHTML += `
                     <div class="legend-item" id="${s.name}">
                         <div class="square" style="background-color:${s.color}"></div>
                         <div class="name">${s.name}</div>
                     </div>
                 `
-            })
-            return data
+                })
+            }
 
+            return {
+                getGeojson,
+                filterData
+            }
         }
     </script>
 
