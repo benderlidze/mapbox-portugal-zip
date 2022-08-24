@@ -94,6 +94,18 @@
             grid-gap: 3px;
             grid-template-rows: repeat(5, auto);
         }
+
+        .resortLabel {
+            background-color: #ffffffc4;
+            background-size: cover;
+            /* width: 80px; */
+            /* height: 50px; */
+            /* cursor: pointer; */
+            padding: 5px;
+            font-size: 1rem;
+            color: black;
+            display: none;
+        }
     </style>
 </head>
 
@@ -113,6 +125,7 @@
         const legendDiv = document.getElementById("legend")
         const zoomLevel = 13
         const allResorts = []
+        const resortLabels = []
 
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2VyZ2JlciIsImEiOiJja3dwOWgzeGQwYWdyMm9xb2pkMDFvYmNuIn0.H9AJ_NLmDNYMed6dvu_Q0A';
         const map = new mapboxgl.Map({
@@ -125,19 +138,15 @@
 
 
         function createPriceLegend(min, max, colors) {
-
             if (typeof colors !== 'function') return;
-
             const res = []
             const step = 1000
             const start = Math.floor((min / step)) * step
             const stop = Math.ceil((max / step)) * step
-
             for (let index = start; index <= stop; index += step) {
                 console.log('index', index);
                 res.push({ index, color: colors(index) })
             }
-
             return res
         }
 
@@ -214,13 +223,13 @@
                     allResorts.push(...geojson.features)
                 })
 
-            // fetch("data/Quinta do Lago.geojson")
-            //     .then(d => d.json())
-            //     .then(json => {
-            //         const geojson = generateLegendAndColors(json)
-            //         map.getSource("resorts").setData(geojson)
-            //         allResorts.push(...geojson.features)
-            //     })
+            fetch("data/resortLabels.geojson")
+                .then(d => d.json())
+                .then(json => {
+                    resortLabels.push(...generateResortLabels(json))
+                    // map.getSource("resorts").setData(geojson)
+                    // allResorts.push(...geojson.features)
+                })
 
             map.addSource('resorts', {
                 'type': 'geojson',
@@ -424,8 +433,6 @@
             });
 
             map.on('mousemove', 'zip-fills', (e) => {
-                console.log('e.features[0]', e.features[0].properties);
-
                 if (e.features[0].properties['price']) {
                     const text = e.features[0].properties['price']
                     popup.setLngLat(e.lngLat).setHTML(text).addTo(map);
@@ -460,16 +467,23 @@
             map.on("zoom", () => {
                 const zoom = map.getZoom()
                 legendDiv.style.display = zoom >= zoomLevel ? "flex" : "none"
+                let display = 'none'
+                if (zoom > 14) {
+                    display = 'inline'
+                }
+                resortLabels.forEach(pin => pin.getElement().style.display = display)
             })
 
-            map.on("click", () => {
+            map.on("click", e => {
                 clearResortsSelection()
+                console.log('e', e.lngLat);
+                const { lat, lng } = e.lngLat
+                const point = turf.point([lng, lat])
+                console.log(JSON.stringify(point));
             })
         });
 
         document.addEventListener("click", e => {
-
-            console.log('e', e);
 
             const layer = e.target.closest(".legend-item")?.id
             if (layer && layer !== "") {
@@ -488,23 +502,34 @@
             map.getSource("resorts").setData(featureCollection)
         }
 
+        function generateResortLabels(data) {
+            return data.features.map(pin => {
+                const el = document.createElement('div');
+                el.className = 'resortLabel';
+                const text = pin.properties.name
+                el.innerHTML = text
+                return new mapboxgl.Marker(el)
+                    .setLngLat(pin.geometry.coordinates)
+                    // .setPopup(popup) // sets a popup on this marker
+                    .addTo(map);
+            })
+
+        }
+
         function generateLegendAndColors(data) {
 
             const colorArray = ["#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", "#E6B333", "#3366E6", "#999966", "#809980", "#E6FF80", "#1AFF33", "#999933", "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#FF4D4D", "#99E6E6", "#6666FF", "red", "orange", "green", "blue"];
             const names = [...new Set(data.features.map(d => d.properties.name))]
             const legend = new Map();
             data.features.forEach((el, key) => {
-
                 el.id = key
                 const name = el.properties.name
                 const color = names.indexOf(name) >= colorArray.length ? colorArray[names.length - names.indexOf(name)] : colorArray[names.indexOf(name)]
                 el.properties.color = color
                 legend.set(el.properties.name, { color, name })
-
-
-                console.log('names.indexOf(name)', color, colorArray.length - names.length);
             });
             legend.forEach(s => {
+                if (s.name === "") return;
                 legendDiv.innerHTML += `
                     <div class="legend-item" id="${s.name}">
                         <div class="square" style="background-color:${s.color}"></div>

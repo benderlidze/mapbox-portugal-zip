@@ -1,0 +1,162 @@
+{
+  "type": "FeatureCollection",
+  "name": "Vale do Lobo",
+  "crs": {
+    "type": "name",
+    "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Oceano Clube" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.047474799565578, 37.045135089505735]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Sea Breeze" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.050023271938102, 37.04567525199968]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dunas Dourdas" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.050533692153067, 37.04764330012844]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Beach Villas" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.051993191788881, 37.04533214806723]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dunas Douradas Beach Club" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.056518354541652, 37.04474079012232]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Encosta do Lobo" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.054961313070919, 37.04763226173539]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vale das Mimosas" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.059795515723863, 37.04629224982553]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Miramar" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.062480493166845, 37.04847385077673]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Aldeia      Sul" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.067731028439056, 37.05089679170982]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Encosta      do Atlântico" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.068619772607207, 37.05424250686838]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Miragolfe" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.068693491571679, 37.05831322194064]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Porta do Sol" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.06481838987753, 37.060335246312604]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Golfe Jardins" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.060626200397394, 37.060790215644815]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Jardins do Golfe" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.061062188102852, 37.059585879111665]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Quadradinhos" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.061397563261352, 37.05890341325684]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Avenida do Mar" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.05844626186726, 37.058863268014875]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vale Real" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.049791263525151, 37.057507351833564]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vale do Ténis" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.052625870328399, 37.0510978118308]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vale do Golfe" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.0597808731344, 37.05189103102545]
+      }
+    }
+  ]
+}
