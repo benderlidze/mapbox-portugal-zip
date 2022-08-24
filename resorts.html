@@ -94,7 +94,6 @@
             grid-gap: 3px;
             grid-template-rows: repeat(5, auto);
         }
-        
     </style>
 </head>
 
@@ -158,7 +157,7 @@
 
                     console.log('min,max', min, max);
 
-                    fetch("data-v1.geojson")
+                    fetch("data/data-v1.geojson")
                         .then(d => d.json())
                         .then(json => {
                             console.log('json', json);
@@ -197,7 +196,7 @@
                 })
 
 
-            fetch("main.geojson")
+            fetch("data/Quinta do Lago.geojson")
                 .then(d => d.json())
                 .then(json => {
                     const geojson = generateLegendAndColors(json)
