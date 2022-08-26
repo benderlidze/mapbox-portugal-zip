@@ -9,6 +9,7 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+    <link rel="stylesheet" href="styles/switcher.css">
 
     <style>
         body {
@@ -88,6 +89,25 @@
             padding: 10px;
         }
 
+        #switchers-div {
+            position: absolute;
+            top: 120px;
+            left: 20px;
+            background-color: white;
+            z-index: 1000;
+            padding: 10px;
+        }
+
+        .switcher-div {
+            display: flex;
+            align-items: center;
+            margin: 5px;
+        }
+
+        .switcher-div>div {
+            margin-left: 5px;
+        }
+
         #price-legend {
             display: grid;
             grid-auto-flow: column;
@@ -114,10 +134,14 @@
         <div>Price per m<sup>2</sup>:</div>
         <div id="price-legend"></div>
     </div>
+    <div id="switchers-div">
+
+    </div>
     <div id="legend"></div>
     <div id="map"></div>
     <script>
 
+        const switchersDiv = document.getElementById("switchers-div")
         const priceLegend = document.getElementById("price-legend")
         const legendDiv = document.getElementById("legend")
         const zoomLevel = 13
@@ -128,24 +152,13 @@
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v11',
-            center: { lng: -8.195694749299946, lat: 37.135657286044875 },
-            zoom: 8.75
+            // center: { lng: -8.195694749299946, lat: 37.135657286044875 },
+            // zoom: 8.75
+            center: { lng: -8.01079628646562, lat: 37.032051091612246 },
+            zoom: 14
+
         });
         let hoveredStateId = null;
-
-
-        function createPriceLegend(min, max, colors) {
-            if (typeof colors !== 'function') return;
-            const res = []
-            const step = 1000
-            const start = Math.floor((min / step)) * step
-            const stop = Math.ceil((max / step)) * step
-            for (let index = start; index <= stop; index += step) {
-                console.log('index', index);
-                res.push({ index, color: colors(index) })
-            }
-            return res
-        }
 
         map.on('load', () => {
 
@@ -174,7 +187,7 @@
 
                                 el.id = key
                                 const price = data.find(zip => zip['ZIP CODE'] === String(el.properties.wpc_id))
-                                
+
                                 if (price) {
                                     el.properties.price = price[`Average price (€/sqm)`] + ` €/sqm`
                                     el.properties.color = colors(price[`Average price (€/sqm)`])
@@ -211,6 +224,7 @@
                 .then(data => {
                     console.log('data', data);
                     const polygons = data.map(f => {
+                        f.features.forEach(p => p.properties.type = f.name)
                         return f.features
                     }).flat()
 
@@ -218,17 +232,24 @@
                     geojson = legend.getGeojson(collection)
                     legend.filterData()
 
+                    legend.buildResortLayerSwitches()
+
                     map.getSource("resorts").setData(geojson)
                     allResorts.push(...geojson.features)
+
+
+                    //build resort numbers 
+                    const numbersData = allResorts.map(p => {
+                        console.log('p', p);
+                        const poly = turf.center(p)
+                        poly.properties.number = p.properties.number
+                        return poly
+                    })
+                    const numbersDataCollection = turf.featureCollection(numbersData)
+                    map.getSource("resortNumbmers").setData(numbersDataCollection)
                 })
 
-            /*
-            fetch("data/resortLabels.geojson")
-            .then(d => d.json())
-            .then(json => {
-                resortLabels.push(...generateResortLabels(json))
-            })
-            */
+
 
             map.addSource('resorts', {
                 'type': 'geojson',
@@ -267,6 +288,37 @@
                 }
             });
 
+            map.addSource('resortNumbmers', {
+                'type': 'geojson',
+                'data': {
+                    "type": "FeatureCollection",
+                    "features": []
+                }
+            });
+
+            map.addLayer({
+                'id': 'resortNumbmers',
+                'type': 'symbol',
+                'minzoom': zoomLevel + 1,
+                'source': 'resortNumbmers',
+                'layout': {
+                    'text-field': ['get', 'number'],
+                    // 'text-font': [
+                    //     'Open Sans Bold',
+                    //     'Arial Unicode MS Bold'
+                    // ],
+                    'text-size': 10,
+                    'text-transform': 'uppercase',
+                    'text-letter-spacing': 0.05,
+                    // 'text-offset': [0, 1.5]
+                },
+                'paint': {
+                    'text-color': 'black',
+                    'text-halo-color': '#fff',
+                    'text-halo-width': 2
+                },
+            });
+
             map.addSource('zip', {
                 'type': 'geojson',
                 'data': {
@@ -291,6 +343,7 @@
                         0.7,
                         0.5
                     ],
+                    // 'fill-outline-color': 'white'
                 }
             });
 
@@ -420,10 +473,15 @@
                 console.log('names', names);
                 const unique = [...new Set(names)]
                 console.log('unique', unique);
-
                 legend.filterData(unique)
             })
         });
+
+
+        switchersDiv.appendChild(buildSwitcher("Resort Key", checked => {
+            let display = checked ? "flex" : "none"
+            legendDiv.style.display = display;
+        }))
 
         document.addEventListener("click", e => {
 
@@ -437,6 +495,19 @@
                 map.fitBounds(bbox, { padding: 100, zoom: 15 })
             }
         })
+
+        function createPriceLegend(min, max, colors) {
+            if (typeof colors !== 'function') return;
+            const res = []
+            const step = 1000
+            const start = Math.floor((min / step)) * step
+            const stop = Math.ceil((max / step)) * step
+            for (let index = start; index <= stop; index += step) {
+                console.log('index', index);
+                res.push({ index, color: colors(index) })
+            }
+            return res
+        }
 
 
         function clearResortsSelection() {
@@ -461,8 +532,10 @@
 
             const colorArray = ["#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", "#E6B333", "#3366E6", "#999966", "#809980", "#E6FF80", "#1AFF33", "#999933", "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#FF4D4D", "#99E6E6", "#6666FF", "red", "orange", "green", "blue"];
             const legend = new Map();
+            const mainData = []
 
             function getGeojson(data) {
+
                 const names = [...new Set(data.features.map(d => d.properties.name))]
                 data.features.forEach((el, key) => {
                     el.id = key
@@ -471,21 +544,34 @@
                     el.properties.color = color
                     legend.set(el.properties.name, { color, name })
                 });
+                mainData.push(...data.features)
                 return data
             }
 
-            // legend.forEach(s => {
-            //     if (s.name === "") return;
-            //     legendDiv.innerHTML += `
-            //         <div class="legend-item" id="${s.name}">
-            //             <div class="square" style="background-color:${s.color}"></div>
-            //             <div class="name">${s.name}</div>
-            //         </div>
-            //     `
-            // })
+            function buildResortLayerSwitches() {
+                const resortNames = [...new Set(mainData.map(d => d.properties.type))]
+                console.log('resortNames', resortNames);
+
+                const selected = [...resortNames];
+                resortNames.forEach(name => {
+                    switchersDiv.appendChild(buildSwitcher(name, checked => {
+                        if (checked) {
+                            selected.push(name)
+                        } else {
+                            removeFromArray(selected, name)
+                        }
+
+                        const filteredResorts = mainData.filter(d => selected.includes(d.properties.type))
+                        const filteredResortsCollection = turf.featureCollection(filteredResorts)
+                        map.getSource('resorts').setData(filteredResortsCollection)
+                        console.log('selected', selected);
+                    }))
+                })
+            }
 
             function filterData(filterArray = []) {
                 legendDiv.innerHTML = ``
+                if (filterArray.length === 0) return;
                 legend.forEach(s => {
                     if (s.name === "") return;
                     if (filterArray.length > 0) {
@@ -502,9 +588,50 @@
 
             return {
                 getGeojson,
-                filterData
+                filterData,
+                buildResortLayerSwitches
             }
         }
+
+        function removeFromArray(array, itemToRemove) {
+            const index = array.indexOf(itemToRemove);
+            if (index !== -1) {
+                array.splice(index, 1);
+            }
+        }
+
+        function buildSwitcher(labelText, action) {
+
+            const div = document.createElement("div")
+            div.className = "switcher-div"
+
+            const label = document.createElement("label")
+            label.className = "switch"
+
+            const checkbox = document.createElement("input")
+            checkbox.type = "checkbox"
+            checkbox.checked = true;
+            checkbox.addEventListener("input", () => {
+                if (typeof action === "function") {
+                    action(checkbox.checked)
+                }
+            })
+
+            const span = document.createElement("span")
+            span.className = "slider round"
+
+            const text = document.createElement("div")
+            text.innerText = labelText
+
+            label.appendChild(checkbox)
+            label.appendChild(span)
+
+            div.appendChild(label)
+            div.appendChild(text)
+
+            return div
+        }
+
     </script>
 
 
