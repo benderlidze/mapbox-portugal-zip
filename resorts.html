@@ -163,17 +163,18 @@
 
                     console.log('min,max', min, max);
 
-                    fetch("data/data-v1.geojson")
+                    fetch("data/data-v3.geojson")
                         .then(d => d.json())
                         .then(json => {
                             console.log('json', json);
 
                             const regionLabels = []
                             json.features.forEach((el, key) => {
-                                el.id = key
-                                const price = data.find(zip => zip['ZIP CODE'] === el.properties.wpc_id)
+                                console.log('el', el);
 
-                                console.log('price', price);
+                                el.id = key
+                                const price = data.find(zip => zip['ZIP CODE'] === String(el.properties.wpc_id))
+                                
                                 if (price) {
                                     el.properties.price = price[`Average price (€/sqm)`] + ` €/sqm`
                                     el.properties.color = colors(price[`Average price (€/sqm)`])
