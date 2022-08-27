@@ -1,0 +1,426 @@
+{
+  "type": "FeatureCollection",
+  "name": "Quinta do Lago",
+  "crs": {
+    "type": "name",
+    "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Gusto", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.028584990534625, 37.061504008135586]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Conrad Algarve", "icon": "hotel" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.027958654831139, 37.061457111763104]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "security" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.025634393826351, 37.06014749931529]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "atm" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.020938336821985, 37.05954493968355]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.022951576329831, 37.05749723735285]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "hairdresser" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.023284328850394, 37.05749280296695]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "infraquinta" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.013278404179914, 37.05181657937008]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "golf" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.00783379957727, 37.04775529260748]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "golf" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.010201049162305, 37.04691884306476]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "II Vero", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.019164500138885, 37.044868083871506]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "golf" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.018334913608584, 37.04482819554157]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "medical" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.017970560931218, 37.04462418149845]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.017450589812057, 37.04528333369353]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "golf" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.017720691612027, 37.04696544295953]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Koko Lane", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.01668536780116, 37.047295976378834]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "atm" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.016332139677957, 37.046673794629356]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "post" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.016271238276289, 37.046566856627564]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "As Velas", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.018471989483544, 37.0489252649233]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "hotel" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.01454868056797, 37.040297218992166]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "golf" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.012499639071962, 37.03320854843449]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "ruins" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.007635567961785, 37.02417667674126]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "birdhide" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.01181329009097, 37.0245164873202]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "trails" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.01472816866496, 37.024611903866955]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gigi's", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.02533765708057, 37.02566094503045]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "bar" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.023988632999703, 37.02526612600222]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "beach" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.02444409367601, 37.024467223595806]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.02123420214869, 37.02807797089076]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "parking" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.021235902160612, 37.02823760455503]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "hotel" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.022827197322755, 37.03071541110923]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bovino + Casta Velha", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.022452793724227, 37.03243532681303]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "trails" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.026553352637194, 37.031704173039074]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Casa do Lago", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.02502754966855, 37.0348399321869]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "watersport" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.02474857441419, 37.035479286587076]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "The Shack", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.026527607992506, 37.035431956629]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "parking" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.027140209048639, 37.03600426869329]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Tucanos", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.029453482972258, 37.03959038000862]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Dlounge", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.027573226404343, 37.04252017519231]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "The Campus", "icon": "campussport" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.029722780995684, 37.044716166104266]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "football" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.031, 37.0458]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "tennis" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.032, 37.0458]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "gym" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.033, 37.0458]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "cycling" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.034, 37.0458]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "running" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.034, 37.045]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "yoga" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.031, 37.045]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "outdoorpool" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.033, 37.045]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "spa" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.032, 37.045]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "medical" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.03137717746003, 37.044307141741285]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "shopping" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.02750999146096, 37.060613061908086]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "bar" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.028466139913974, 37.06049058123567]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "atm" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.029618044696093, 37.06083779861653]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "food" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.029893533083282, 37.061018841987746]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "", "icon": "market" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.029529236579009, 37.06124643535267]
+      }
+    }
+  ]
+}

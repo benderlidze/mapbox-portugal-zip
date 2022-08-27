@@ -1,0 +1,171 @@
+{
+  "type": "FeatureCollection",
+  "name": "Quinta do Lago",
+  "crs": {
+    "type": "name",
+    "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "The Keys" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.032124576985922, 37.05990197349824]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Four Seasons Country Club" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.018382003567837, 37.049909948512536]
+      }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "name": "The Campus" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.029709619425688, 37.0442359890355]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vale dos Pinheiros" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.028815041296752, 37.04272621569362]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lakeside Village CC" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.026502057701862, 37.04191501352955]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Encosta do Lago" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.030111254485519, 37.039523066406986]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Salinas Country Club" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.030489155629766, 37.036866618865744]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Reserva" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.023057597610773, 37.03364932009437]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Victory Village" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.020859418097984, 37.032751761561244]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Quinta do Lago Country Club" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.024080888073343, 37.032065979353305]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Hotel Quinta do Lago" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.022422986761512, 37.03111659782678]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "São Lourenço Village" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.011708578987196, 37.0296548260022]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "San Lorenzo Golf Club" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.011234833539106, 37.03066563813876]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Quinta Formosa" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.008411305618239, 37.03935700337094]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Martinhal Quinta" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.01169367414687, 37.039647333753024]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Monte da Quinta Suites" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.01442222531756, 37.040740722062054]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Four Seasons Fairways" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.012518952424216, 37.0431664121641]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Vilar do Golf" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.018971980321226, 37.04373719025297]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "QDL Golf Club" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.019611418438387, 37.04603348686679]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Pinheiros Altos GC" },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-8.007998037735462, 37.047119898903446]
+      }
+    }
+  ]
+}

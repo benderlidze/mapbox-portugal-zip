@@ -116,12 +116,18 @@
         }
 
         .resortLabel {
-            background-color: #ffffffc4;
+            background-color: rgba(255, 255, 255, 0.849);
             background-size: cover;
             padding: 5px;
             font-size: 1rem;
             color: black;
             display: none;
+        }
+
+        .POI {
+            width: 40px;
+            height: 40px;
+            background-size: 40px;
         }
     </style>
 </head>
@@ -209,7 +215,6 @@
                                     </div>
                                     `
                             })
-
                             map.getSource("zip").setData(json)
                             map.getSource("regionLabels").setData(turf.featureCollection(regionLabels))
                         })
@@ -240,7 +245,6 @@
 
                     //build resort numbers 
                     const numbersData = allResorts.map(p => {
-                        console.log('p', p);
                         const poly = turf.center(p)
                         poly.properties.number = p.properties.number
                         return poly
@@ -249,6 +253,50 @@
                     map.getSource("resortNumbmers").setData(numbersDataCollection)
                 })
 
+
+            Promise.all([
+                fetch("data/resortLabels Quinta do Lago.geojson").then(res => res.json()),
+                fetch("data/resortLabels Vale do Lobo.geojson").then(res => res.json())
+            ])
+                .then(data => {
+
+                    const polygons = data.map(f => {
+                        f.features.forEach(p => p.properties.type = f.name)
+                        return f.features
+                    }).flat()
+
+                    resortLabels.push(...generateResortLabels(polygons))
+                    map.getSource("resorts").setData(geojson)
+                    allResorts.push(...geojson.features)
+                })
+
+
+
+            Promise.all([
+                fetch("data/POI Quinta do Lago.geojson").then(res => res.json()),
+            ])
+                .then(data => {
+
+                    console.log('data', data);
+                    const polygons = data.map(f => {
+                        f.features.forEach(p => p.properties.type = f.name)
+                        return f.features
+                    }).flat()
+
+                    resortLabels.push(...generatePOI(polygons))
+                    // map.getSource("resorts").setData(geojson)
+                    // allResorts.push(...geojson.features)
+                })
+
+
+
+            // fetch("data/resortLabels Vale do Lobo.geojson")
+            //     .then(d => d.json())
+            //     .then(json => {
+            //         resortLabels.push(...generateResortLabels(json))
+            //         map.getSource("resorts").setData(geojson)
+            //         allResorts.push(...geojson.features)
+            //     })
 
 
             map.addSource('resorts', {
@@ -327,8 +375,6 @@
                 }
             });
 
-            // The feature-state dependent fill-opacity expression will render the hover effect
-            // when a feature's hover state is set to true.
             map.addLayer({
                 'id': 'zip-fills',
                 'maxzoom': zoomLevel,
@@ -401,7 +447,6 @@
                 )
                 .addTo(map);
 
-
             const popup = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false
@@ -464,8 +509,18 @@
                 clearResortsSelection()
                 console.log('e', e.lngLat);
                 const { lat, lng } = e.lngLat
-                const point = turf.point([lng, lat])
-                console.log(JSON.stringify(point));
+                const point = turf.point([lng, lat], { name: "", icon: "" })
+
+                const pointString = JSON.stringify(point)
+                console.log(pointString);
+
+                // copy json to clipboard
+                try {
+                    navigator.clipboard.writeText(', ' + pointString);
+                } catch (e) {
+                    alert(e)
+                }
+
             })
 
             map.on("moveend", e => {
@@ -511,16 +566,33 @@
 
 
         function clearResortsSelection() {
+
             const featureCollection = { type: 'FeatureCollection', features: allResorts }
             map.getSource("resorts").setData(featureCollection)
         }
 
         function generateResortLabels(data) {
-            return data.features.map(pin => {
+            return data.map(pin => {
                 const el = document.createElement('div');
                 el.className = 'resortLabel';
                 const text = pin.properties.name
                 el.innerHTML = text
+                return new mapboxgl.Marker(el)
+                    .setLngLat(pin.geometry.coordinates)
+                    // .setPopup(popup) // sets a popup on this marker
+                    .addTo(map);
+            })
+        }
+        function generatePOI(data) {
+            return data.map(pin => {
+                console.log('pin', pin);
+                const el = document.createElement('div');
+                el.className = 'POI';
+                el.style.backgroundImage = `url("img/icons/${pin.properties.icon}.png")`;
+
+                // const text = pin.properties.name
+                // el.innerHTML = text
+                console.log('pin', pin);
                 return new mapboxgl.Marker(el)
                     .setLngLat(pin.geometry.coordinates)
                     // .setPopup(popup) // sets a popup on this marker
