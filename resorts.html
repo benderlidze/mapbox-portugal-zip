@@ -153,6 +153,7 @@
         const zoomLevel = 13
         const allResorts = []
         const resortLabels = []
+        const POILabels = []
 
         mapboxgl.accessToken = 'pk.eyJ1IjoidGhlbmF2YWhvIiwiYSI6ImNsNzV4bGcyejAyZWgzb3BhYWE1emIyanAifQ.eJL8ur4OFD0AHI0g9Nc9wA';
         const map = new mapboxgl.Map({
@@ -180,8 +181,6 @@
                         .domain([min, max])
                         .range(['#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#BD0026', '#800026', '#520018']);
 
-                    console.log('min,max', min, max);
-
                     fetch("data/data-v3.geojson")
                         .then(d => d.json())
                         .then(json => {
@@ -189,7 +188,6 @@
 
                             const regionLabels = []
                             json.features.forEach((el, key) => {
-                                console.log('el', el);
 
                                 el.id = key
                                 const price = data.find(zip => zip['ZIP CODE'] === String(el.properties.wpc_id))
@@ -247,10 +245,23 @@
                     const numbersData = allResorts.map(p => {
                         const poly = turf.center(p)
                         poly.properties.number = p.properties.number
+                        poly.properties.name = p.properties.name
                         return poly
                     })
                     const numbersDataCollection = turf.featureCollection(numbersData)
                     map.getSource("resortNumbmers").setData(numbersDataCollection)
+
+
+                    switchersDiv.appendChild(buildSwitcher("Quinta do Lago Numbers", checked => {
+
+                        if (!checked) {
+                            const numbers = numbersDataCollection.features.filter(num => num.properties.name === "Quinta do Lago Numbers")
+                            const collection = turf.featureCollection(numbers)
+                            map.getSource("resortNumbmers").setData(collection)
+                        } else {
+                            map.getSource("resortNumbmers").setData(numbersDataCollection)
+                        }
+                    }))
                 })
 
 
@@ -260,32 +271,54 @@
             ])
                 .then(data => {
 
+
+                    //build switchers  
+                    data.map(arr => {
+                        switchersDiv.appendChild(buildSwitcher(arr.name + " Labels ", checked => {
+                            resortLabels
+                                .filter(poi => poi.getElement().dataset.name === arr.name)
+                                .forEach(poi => {
+                                    checked && poi.addTo(map) || poi.remove()
+                                })
+                        }))
+                    })
+
+
                     const polygons = data.map(f => {
                         f.features.forEach(p => p.properties.type = f.name)
                         return f.features
                     }).flat()
 
                     resortLabels.push(...generateResortLabels(polygons))
-                    map.getSource("resorts").setData(geojson)
-                    allResorts.push(...geojson.features)
+                    // map.getSource("resorts").setData(geojson)
+                    // allResorts.push(...geojson.features)
                 })
 
 
 
             Promise.all([
                 fetch("data/POI Quinta do Lago.geojson").then(res => res.json()),
+                fetch("data/POI Vale do Lobo.geojson").then(res => res.json()),
             ])
                 .then(data => {
 
-                    console.log('data', data);
+                    //build switchers  
+                    data.map(arr => {
+                        switchersDiv.appendChild(buildSwitcher(arr.name + " POI ", checked => {
+                            POILabels
+                                .filter(poi => poi.getElement().dataset.name === arr.name)
+                                .forEach(poi => {
+                                    checked && poi.addTo(map) || poi.remove()
+                                })
+                        }))
+                    })
+
                     const polygons = data.map(f => {
                         f.features.forEach(p => p.properties.type = f.name)
                         return f.features
                     }).flat()
 
-                    resortLabels.push(...generatePOI(polygons))
-                    // map.getSource("resorts").setData(geojson)
-                    // allResorts.push(...geojson.features)
+                    POILabels.push(...generatePOI(polygons))
                 })
 
 
@@ -558,7 +591,6 @@
             const start = Math.floor((min / step)) * step
             const stop = Math.ceil((max / step)) * step
             for (let index = start; index <= stop; index += step) {
-                console.log('index', index);
                 res.push({ index, color: colors(index) })
             }
             return res
@@ -575,27 +607,23 @@
             return data.map(pin => {
                 const el = document.createElement('div');
                 el.className = 'resortLabel';
+                el.setAttribute('data-name', pin.properties.type)
                 const text = pin.properties.name
                 el.innerHTML = text
                 return new mapboxgl.Marker(el)
                     .setLngLat(pin.geometry.coordinates)
-                    // .setPopup(popup) // sets a popup on this marker
                     .addTo(map);
             })
         }
+
         function generatePOI(data) {
             return data.map(pin => {
-                console.log('pin', pin);
                 const el = document.createElement('div');
                 el.className = 'POI';
                 el.style.backgroundImage = `url("img/icons/${pin.properties.icon}.png")`;
-
-                // const text = pin.properties.name
-                // el.innerHTML = text
-                console.log('pin', pin);
+                el.setAttribute('data-name', pin.properties.type)
                 return new mapboxgl.Marker(el)
                     .setLngLat(pin.geometry.coordinates)
-                    // .setPopup(popup) // sets a popup on this marker
                     .addTo(map);
             })
         }
@@ -622,7 +650,6 @@
 
             function buildResortLayerSwitches() {
                 const resortNames = [...new Set(mainData.map(d => d.properties.type))]
-                console.log('resortNames', resortNames);
 
                 const selected = [...resortNames];
                 resortNames.forEach(name => {
@@ -636,7 +663,7 @@
                         const filteredResorts = mainData.filter(d => selected.includes(d.properties.type))
                         const filteredResortsCollection = turf.featureCollection(filteredResorts)
                         map.getSource('resorts').setData(filteredResortsCollection)
-                        console.log('selected', selected);
+
                     }))
                 })
             }
