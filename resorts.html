@@ -245,7 +245,8 @@
 
             Promise.all([
                 fetch("data/Quinta do Lago.geojson").then(res => res.json()),
-                fetch("data/Vale do Lobo.geojson").then(res => res.json())
+                fetch("data/Vale do Lobo.geojson").then(res => res.json()),
+                fetch("data/Ocean View.geojson").then(res => res.json())
             ])
                 .then(data => {
                     console.log('data', data);
@@ -266,6 +267,7 @@
 
                     //build resort numbers 
                     const numbersData = allResorts.map(p => {
+                        console.log('p', p);
                         const poly = turf.center(p)
                         poly.properties.number = p.properties.number
                         poly.properties.name = p.properties.name
@@ -274,9 +276,7 @@
                     const numbersDataCollection = turf.featureCollection(numbersData)
                     map.getSource("resortNumbmers").setData(numbersDataCollection)
 
-
                     switchersDiv.appendChild(buildSwitcher("Quinta do Lago Numbers", checked => {
-
                         if (!checked) {
                             const numbers = numbersDataCollection.features.filter(num => num.properties.name === "Quinta do Lago Numbers")
                             const collection = turf.featureCollection(numbers)
@@ -285,6 +285,8 @@
                             map.getSource("resortNumbmers").setData(numbersDataCollection)
                         }
                     }))
+
+
                 })
 
 
