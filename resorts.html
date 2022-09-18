@@ -267,7 +267,7 @@
 
                     //build resort numbers 
                     const numbersData = allResorts.map(p => {
-                        console.log('p', p);
+                        // console.log('p', p);
                         const poly = turf.center(p)
                         poly.properties.number = p.properties.number
                         poly.properties.name = p.properties.name
@@ -495,8 +495,10 @@
 
             const el = document.createElement('div');
             el.className = 'marker';
-            new mapboxgl.Marker(el)
-                .setLngLat([-8.028522592799206, 37.060823773495436])
+            new mapboxgl.Marker(el, {
+                offset: [0, -15]
+            })
+                .setLngLat([-8.030516759074487, 37.06104561542888])
                 .setPopup(
                     new mapboxgl.Popup({ offset: 25 }) // add popups
                         .setHTML(
