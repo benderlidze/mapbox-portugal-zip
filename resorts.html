@@ -325,33 +325,32 @@
                 })
 
 
+            /*
+        Promise.all([
+            fetch("data/POI Quinta do Lago.geojson").then(res => res.json()),
+            fetch("data/POI Vale do Lobo.geojson").then(res => res.json()),
+        ])
+            .then(data => {
 
-            Promise.all([
-                fetch("data/POI Quinta do Lago.geojson").then(res => res.json()),
-                fetch("data/POI Vale do Lobo.geojson").then(res => res.json()),
-            ])
-                .then(data => {
-
-                    //build switchers  
-                    //- Remove/Disable POI toggle and icons
-                    // data.map(arr => {
-                    //     switchersDiv.appendChild(buildSwitcher(arr.name + " POI ", checked => {
-                    //         POILabels
-                    //             .filter(poi => poi.getElement().dataset.name === arr.name)
-                    //             .forEach(poi => {
-                    //                 checked && poi.addTo(map) || poi.remove()
-                    //             })
-                    //     }))
-                    // })
-
-                    const polygons = data.map(f => {
-                        f.features.forEach(p => p.properties.type = f.name)
-                        return f.features
-                    }).flat()
-
-                    POILabels.push(...generatePOI(polygons))
+                //build switchers  
+                data.map(arr => {
+                    switchersDiv.appendChild(buildSwitcher(arr.name + " POI ", checked => {
+                        POILabels
+                            .filter(poi => poi.getElement().dataset.name === arr.name)
+                            .forEach(poi => {
+                                checked && poi.addTo(map) || poi.remove()
+                            })
+                    }))
                 })
 
+                const polygons = data.map(f => {
+                    f.features.forEach(p => p.properties.type = f.name)
+                    return f.features
+                }).flat()
+
+                POILabels.push(...generatePOI(polygons))
+            })
+*/
 
 
             // fetch("data/resortLabels Vale do Lobo.geojson")
