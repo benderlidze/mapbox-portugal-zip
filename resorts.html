@@ -726,9 +726,17 @@
                         const filteredResorts = mainData.filter(d => selected.includes(d.properties.type))
                         const filteredResortsCollection = turf.featureCollection(filteredResorts)
                         map.getSource('resorts').setData(filteredResortsCollection)
-
                     }))
                 })
+
+                //GRAYSCALE LAYER 
+                switchersDiv.appendChild(buildSwitcher("Outline", checked => {
+                    if (checked) {
+                        map.setPaintProperty("resorts-fills", "fill-color", "rgba(0,0,0,0.1)")
+                    } else {
+                        map.setPaintProperty("resorts-fills", "fill-color", ['get', 'color'])
+                    }
+                }, false))
             }
 
             function filterData(filterArray = []) {
