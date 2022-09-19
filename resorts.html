@@ -333,15 +333,16 @@
                 .then(data => {
 
                     //build switchers  
-                    data.map(arr => {
-                        switchersDiv.appendChild(buildSwitcher(arr.name + " POI ", checked => {
-                            POILabels
-                                .filter(poi => poi.getElement().dataset.name === arr.name)
-                                .forEach(poi => {
-                                    checked && poi.addTo(map) || poi.remove()
-                                })
-                        }))
-                    })
+                    //- Remove/Disable POI toggle and icons
+                    // data.map(arr => {
+                    //     switchersDiv.appendChild(buildSwitcher(arr.name + " POI ", checked => {
+                    //         POILabels
+                    //             .filter(poi => poi.getElement().dataset.name === arr.name)
+                    //             .forEach(poi => {
+                    //                 checked && poi.addTo(map) || poi.remove()
+                    //             })
+                    //     }))
+                    // })
 
                     const polygons = data.map(f => {
                         f.features.forEach(p => p.properties.type = f.name)
