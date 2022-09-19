@@ -152,6 +152,16 @@
             height: 40px;
             background-size: 40px;
         }
+
+        #switchers-enable {
+            position: absolute;
+            z-index: 1000;
+            display: flex;
+            background-color: white;
+            bottom: 10px;
+            left: 10px;
+            padding: 5px;
+        }
     </style>
 </head>
 
@@ -168,8 +178,11 @@
     </div>
     <div id="legend"></div>
     <div id="map"></div>
+
+    <div id="switchers-enable"></div>
     <script>
 
+        const switchersEnableDiv = document.getElementById("switchers-enable")
         const switchersDiv = document.getElementById("switchers-div")
         const priceLegend = document.getElementById("price-legend")
         const legendDiv = document.getElementById("legend")
@@ -598,6 +611,10 @@
             })
         });
 
+        switchersEnableDiv.appendChild(buildSwitcher("On/off toggles", checked => {
+            let display = checked ? "inline" : "none"
+            switchersDiv.style.display = display;
+        }))
 
         switchersDiv.appendChild(buildSwitcher("Resort Key", checked => {
             let display = checked ? "flex" : "none"
