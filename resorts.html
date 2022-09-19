@@ -205,6 +205,15 @@
 
         map.on('load', () => {
 
+            map.addLayer({
+                id: 'satellite',
+                source: { "type": "raster", "url": "mapbox://mapbox.satellite", "tileSize": 256 },
+                type: "raster",
+                layout: {
+                    visibility: 'none'
+                }
+            });
+
             d3
                 .csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTgM8SfhGa20qi8TqJZRuCtm9tLITwW4AUkVRxN215mJlZB4Czf93YJFDVb8PsA4hfY-pl3SVBFGcU3/pub?output=csv")
                 .then(data => {
@@ -612,12 +621,16 @@
         });
 
         switchersEnableDiv.appendChild(buildSwitcher("On/off toggles", checked => {
-            let display = checked ? "inline" : "none"
+            const display = checked ? "inline" : "none"
             switchersDiv.style.display = display;
         }))
+        switchersEnableDiv.appendChild(buildSwitcher("Satellite", checked => {
+            const display = checked ? "visible" : "none"
+            map.setLayoutProperty('satellite', 'visibility', display);
+        }, false))
 
         switchersDiv.appendChild(buildSwitcher("Resort Key", checked => {
-            let display = checked ? "flex" : "none"
+            const display = checked ? "flex" : "none"
             legendDiv.style.display = display;
         }))
 
@@ -749,7 +762,7 @@
             }
         }
 
-        function buildSwitcher(labelText, action) {
+        function buildSwitcher(labelText, action, checked = true) {
 
             const div = document.createElement("div")
             div.className = "switcher-div"
@@ -759,7 +772,7 @@
 
             const checkbox = document.createElement("input")
             checkbox.type = "checkbox"
-            checkbox.checked = true;
+            checkbox.checked = checked
             checkbox.addEventListener("input", () => {
                 if (typeof action === "function") {
                     action(checkbox.checked)
