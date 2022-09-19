@@ -227,6 +227,11 @@
                                 regionLabels.push(center)
                             });
 
+                            regionLabels.push({
+                                "type": "Feature", "properties": { "name": "Ocean View", "icon": "" },
+                                "geometry": { "type": "Point", "coordinates": [-8.036543503777011, 37.04215501082962] }
+                            })
+
                             const legend = createPriceLegend(min, max, colors)
                             legend.forEach(item => {
                                 priceLegend.innerHTML += `
@@ -585,10 +590,11 @@
 
             map.on("moveend", e => {
                 const names = map.queryRenderedFeatures({ layers: ['resorts-fills'] }).map(f => f.properties.name)
-                console.log('names', names);
+
                 const unique = [...new Set(names)]
-                console.log('unique', unique);
-                legend.filterData(unique)
+
+                //- Remove/Disable resort labels ‘in view’ function legend.filterData(unique)
+                //legend.filterData(unique)
             })
         });
 
