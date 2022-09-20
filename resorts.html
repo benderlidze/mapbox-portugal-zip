@@ -229,7 +229,7 @@
                     fetch("data/data-v3.geojson")
                         .then(d => d.json())
                         .then(json => {
-                            console.log('json', json);
+                            // console.log('json', json);
 
                             const regionLabels = []
                             json.features.forEach((el, key) => {
@@ -382,6 +382,96 @@
             //         map.getSource("resorts").setData(geojson)
             //         allResorts.push(...geojson.features)
             //     })
+
+
+            // ================ PROPERTY VALUES ============================
+            Promise.all([
+                fetch("data/Property Value m2.geojson").then(res => res.json()),
+                d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRv9SllPU8XqxHG2zFmk1E8AFToxj4VMFGRi-wog9heJjbwXXQkcXoFCNxYQaekE1ak40eIOIKWbIjW/pub?output=csv", { cache: "no-store" })
+            ])
+                .then(data => {
+                    const [propjson, colours] = data
+                    console.log('colours', colours);
+                    propjson.features.forEach(f => {
+                        console.log('f.pname', f.properties.pname);
+
+                        const prop = colours.find(c => c.Resort.trim().toUpperCase() === f.properties.pname.trim().toUpperCase())
+                        if (prop) {
+                            f.properties.color = prop.HColour
+                        }
+                    })
+                    const points = propjson.features.map(f => {
+                        const center = turf.centerOfMass(f)
+                        center.properties.pname = f.properties.pname
+                        return center
+                    })
+                    const collection = turf.featureCollection([
+                        ...propjson.features,
+                        ...points
+                    ])
+                    console.log('propjson.collection', collection);
+                    map.getSource("propertyValues").setData(collection)
+
+                    switchersDiv.appendChild(buildSwitcher("Property Value m2", checked => {
+                        const display = checked ? "visible" : "none"
+                        map.setLayoutProperty('propertyValues-fills', 'visibility', display);
+                        map.setLayoutProperty('propertyValues-names', 'visibility', display);
+                    }, false))
+                })
+
+
+            map.addSource('propertyValues', {
+                'type': 'geojson',
+                'data': {
+                    "type": "FeatureCollection",
+                    "features": []
+                }
+            });
+            map.addLayer({
+                'id': 'propertyValues-fills',
+                'type': 'fill',
+                // 'minzoom': zoomLevel,
+                'source': 'propertyValues',
+                layout: {
+                    visibility: 'none'
+                },
+                'paint': {
+                    'fill-color': ['get', 'color'],
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        1,
+                        0.8
+                    ],
+                },
+                'filter': ['==', '$type', "Polygon"]
+            });
+            map.addLayer({
+                'id': 'propertyValues-names',
+                'type': 'symbol',
+                'source': 'propertyValues',
+                'layout': {
+                    visibility: 'none',
+                    'text-field': ['get', 'pname'],
+                    'text-font': [
+                        'Open Sans Bold',
+                        'Arial Unicode MS Bold'
+                    ],
+                    'text-size': 11,
+                    'text-transform': 'uppercase',
+                    'text-letter-spacing': 0.05,
+                    // 'text-offset': [0, 1.5]
+                    'text-allow-overlap': true,
+                },
+                'paint': {
+                    'text-color': '#8d2324',
+                    'text-halo-color': '#fff',
+                    'text-halo-width': 2
+                },
+                'filter': ['==', '$type', 'Point']
+            });
+            // ================ [END]PROPERTY VALUES ============================
+
 
 
             map.addSource('resorts', {
